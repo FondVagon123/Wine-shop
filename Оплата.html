@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        header {
+            background-color: #732323;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        main {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        #cart-items-payment {
+            list-style: none;
+            padding: 0;
+        }
+
+        #cart-items-payment li {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        #total {
+            color: #333;
+        }
+
+        #paymentForm {
+            margin-top: 20px;
+        }
+
+        #paymentForm label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #confirmPayment {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Сторінка оплати</h1>
+    </header>
+    <main>
+        <article>
+            <h2>Товари у кошику:</h2>
+            <ul id="cart-items-payment">
+                <!-- Тут відображаються товари з кошика -->
+            </ul>
+        </article>
+        <article>
+            <h2>Інформація про користувача:</h2>
+            <form id="userInfoForm">
+                <label for="firstName">Ім'я:</label>
+                <input type="text" id="firstName" name="firstName" required>
+
+                <label for="lastName">Прізвище:</label>
+                <input type="text" id="lastName" name="lastName" required>
+
+                <label for="phoneNumber">Мобільний номер телефону:</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required>
+
+                <label for="email">Email/Логін:</label>
+                <input type="email" id="email" name="email" required>
+
+                <button id="confirmUserInfo">Підтвердити інформацію</button>
+            </form>
+        </article>
+        <article>
+            <h2>Спосіб оплати:</h2>
+            <form id="paymentForm">
+                <label>
+                    <input type="radio" name="paymentMethod" value="Приват24"> Приват24
+                </label>
+                <label>
+                    <input type="radio" name="paymentMethod" value="МоноБанк"> МоноБанк
+                </label>
+                <label>
+                    <input type="radio" name="paymentMethod" value="Paypal"> Paypal
+                </label>
+            </form>
+        </article>
+        <button id="confirmPayment">Підтвердити оплату</button>
+    </main>
+    <script>
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartItemsPayment = document.getElementById('cart-items-payment');
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const emailInput = document.getElementById('email');
+
+        // Зчитуємо збережені дані користувача з локального сховища
+        const savedUserInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
+
+        // Встановлюємо збережені дані користувача в поля форми, якщо вони існують
+        if (savedUserInfo.firstName) {
+            firstNameInput.value = savedUserInfo.firstName;
+        }
+        if (savedUserInfo.lastName) {
+            lastNameInput.value = savedUserInfo.lastName;
+        }
+        if (savedUserInfo.phoneNumber) {
+            phoneNumberInput.value = savedUserInfo.phoneNumber;
+        }
+        if (savedUserInfo.email) {
+            emailInput.value = savedUserInfo.email;
+        }
+
+        function displayCartItems() {
+            cartItemsPayment.innerHTML = '';
+            cart.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.productName} - ₴${item.price}`;
+                cartItemsPayment.appendChild(listItem);
+            });
+        }
+
+        displayCartItems();
+
+        document.getElementById('confirmUserInfo').addEventListener('click', function() {
+            // Зберігаємо інформацію про користувача в локальному сховищі
+            const userInfo = {
+                firstName: firstNameInput.value,
+                lastName: lastNameInput.value,
+                phoneNumber: phoneNumberInput.value,
+                email: emailInput.value,
+            };
+
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+            alert('Інформацію про користувача збережено.');
+        });
+
+        document.getElementById('confirmPayment').addEventListener('click', function() {
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            const firstName = firstNameInput.value;
+            const lastName = lastNameInput.value;
+            const phoneNumber = phoneNumberInput.value;
+            const email = emailInput.value;
+
+            if (selectedPaymentMethod && firstName && lastName && phoneNumber && email) {
+                const paymentMethod = selectedPaymentMethod.value;
+
+                console.log('Ім`я: ' + firstName);
+                console.log('Прізвище: ' + lastName);
+                console.log('Мобільний номер телефону: ' + phoneNumber);
+                console.log('Email/Логін: ' + email);
+                console.log('Спосіб оплати: ' + paymentMethod);
+
+                if (paymentMethod === "Приват24") {
+                    window.location.href = "https://www.privat24.ua/";
+                } else if (paymentMethod === "МоноБанк") {
+                    window.location.href = "https://www.monobank.com/";
+                } else if (paymentMethod === "Paypal") {
+                    window.location.href = "https://www.paypal.com/";
+                }
+            } else {
+                alert('Будь ласка, заповніть усі поля та виберіть спосіб оплати.');
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+

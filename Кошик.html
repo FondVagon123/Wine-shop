@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Винна історія</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        #background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        header {
+            background-color: #732323;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        nav {
+            background-color: #732323;
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav li {
+            margin: 0 20px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        nav a:hover {
+            border-color: #fff;
+        }
+
+
+        footer {
+            background-color: #732323;
+            color: #fff;
+            text-align: center;
+            padding: 8px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        main {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        #cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px 0;
+        }
+
+        #cart-items li button {
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            width: 24px;
+            height: 24px;
+        }
+
+        p {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        #total {
+            color: #333;
+        }
+
+        #payButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://img1.akspic.ru/crops/3/6/9/9/3/139963/139963-vinogradnye_listya-rastenie-lavanda-zelenyj-list-1920x1080.jpg" alt="Виноградні листя" id="background-image">
+    <header>
+        <h1>Сонячні виноградники</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="Головна сторінка.html">Головна</a></li>
+            <li><a href="Продукція.html">Продукція</a></li>
+            <li><a href="Про нас.html">Про нас</a></li>
+            <li><a href="Контакти.html">Контакти</a></li>
+            <li><a href="Реєстрація.html">Реєстрація</a></li>
+            <li><a href="Авторизація.html">Авторизація</a></li>
+            <li><a href="Кошик.html">Кошик</a></li>
+            <li><a href="Профіль.html">Профіль</a></li>
+        </ul>
+    </nav>
+    <footer>
+        &copy; 2023 Винний магазин. Всі права захищені.
+    </footer>
+    <main>
+        <article>
+            <h1>Кошик</h1>
+            <ul id="cart-items">
+                <!-- Сюди будуть додаватися товари з кошика -->
+            </ul>
+            <p>Загальна сума: <span id="total">0</span> грн</p>
+            <button id="payButton">Сплатити</button> <!-- Кнопка "Сплатити" -->
+        </article>
+    </main>
+    <!-- JavaScript для відображення товарів з кошика та їх видалення -->
+    <script>
+        // Отримайте товари з локального сховища браузера
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartItems = document.getElementById('cart-items');
+        const totalElement = document.getElementById('total');
+        let total = 0;
+    
+        // Функція для видалення товару з кошика
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+    
+        // Функція для оновлення відображення кошика
+        function updateCart() {
+            // Очистити відображення кошика
+            cartItems.innerHTML = '';
+            total = 0;
+    
+            // Додати товари до відображення та кнопки для видалення
+            cart.forEach((item, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.productName} - ₴${item.price}`;
+    
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'X';
+                removeButton.onclick = () => removeItem(index);
+    
+                listItem.appendChild(removeButton);
+                cartItems.appendChild(listItem);
+                total += item.price;
+            });
+    
+            // Оновити загальну суму
+            totalElement.textContent = `₴${total}`;
+    
+            // Оновіть локальне сховище браузера
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+    
+        // Викличіть функцію для оновлення відображення кошика при завантаженні сторінки
+        updateCart();
+    
+        // Обробник події для кнопки "Сплатити"
+        const payButton = document.getElementById('payButton');
+        payButton.addEventListener('click', function() {
+            // Перенаправити користувача на сторінку оплати
+            window.location.href = 'Оплата.html';
+        });
+    </script>
+    
+</body>
+</html>
